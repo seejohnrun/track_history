@@ -8,7 +8,7 @@
 
 ## Introduction
 
-Sometimes you want to track changes in a model, but in larger tables its _really_ inefficient to query against a polymorphic relationship in a single table like 'audits'.  __Historical__ is a way to do this in a performant way, and its still easy!
+Sometimes you want to track changes in a model, but in larger tables its _really_ inefficient to query against a polymorphic relationship in a single table like 'audits'.  __TrackHistory__ is a way to do this in a performant way, and its still easy!
 
 __Not currently Rails 3 compatible__
 
