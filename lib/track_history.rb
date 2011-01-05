@@ -1,6 +1,6 @@
-module Historical
+module TrackHistory
 
-  autoload :VERSION, File.join(File.dirname(__FILE__), 'historical', 'version')
+  autoload :VERSION, File.join(File.dirname(__FILE__), 'track_history', 'version')
   require 'active_record'
 
   def self.install
@@ -17,14 +17,14 @@ module Historical
     # Make a model historical
     # Takes a hash of options, which can only be :model_name to force a different model name
     # Default model name is ModelHistory
-    def historical(options = {})
+    def track_history(options = {})
       @historical_fields = []
       @historical_tracks = {}
       define_historical_model(self, options[:model_name])
       yield if block_given?
     end
 
-    def track(field, &block) # haha
+    def annotate(field, &block) # haha
       @historical_tracks ||= []
       @historical_tracks[field] = block
       unless @klass_reference.columns_hash.has_key?(field.is_a?(Symbol) ? field.to_s : field) 
@@ -106,4 +106,4 @@ module Historical
 
 end
 
-Historical::install
+TrackHistory::install

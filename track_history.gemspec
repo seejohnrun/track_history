@@ -1,8 +1,8 @@
-require 'lib/historical'
+require 'lib/track_history'
 
 spec = Gem::Specification.new do |s|
   
-  s.name = 'historical'
+  s.name = 'track_history'
   s.author = 'John Crepezzi'
   s.add_development_dependency('rspec')
   s.description = 'Smart, performant model auditing'
@@ -14,7 +14,7 @@ spec = Gem::Specification.new do |s|
   s.require_paths = ['lib']
   s.summary = 'Smart model auditing'
   s.test_files = Dir.glob('spec/*.rb')
-  s.version = Historical::VERSION
+  s.version = TrackHistory::VERSION
   s.rubyforge_project = "historical"
 
 end

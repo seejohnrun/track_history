@@ -1,16 +1,16 @@
 require 'spec/rake/spectask'
-require 'lib/historical/version'
+require 'lib/track_history/version'
  
 task :build => :test do
-  system "gem build historical.gemspec"
+  system "gem build track_history.gemspec"
 end
 
 task :release => :build do
   # tag and push
-  system "git tag v#{Historical::VERSION}"
+  system "git tag v#{TrackHistory::VERSION}"
   system "git push origin --tags"
   # push the gem
-  system "gem push historical-#{Historical::VERSION}.gem"
+  system "gem push track_history-#{TrackHistory::VERSION}.gem"
 end
  
 Spec::Rake::SpecTask.new(:test) do |t|

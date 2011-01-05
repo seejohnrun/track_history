@@ -1,4 +1,4 @@
-module Historical
+module TrackHistory
 
   VERSION = '0.0.1'
 
