@@ -1,0 +1,3 @@
+* has_many serialization
+* convenient generators that make nice indexes for people
+* allow other than ActiveRecord
