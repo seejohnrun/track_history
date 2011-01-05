@@ -1,10 +1,4 @@
-# Track History
-
-## Installation
-
-    gem install track_history
-
----
+# TrackHistory
 
 ## Introduction
 
@@ -47,6 +41,12 @@ But wait, you say!  I want to use this to annotate some more information when th
     track_history do
       annotate(:name) { "#{name} !!!" }
     end
+
+---
+
+## Installation
+
+    gem install track_history
 
 ---
 
