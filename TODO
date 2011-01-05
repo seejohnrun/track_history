@@ -1,3 +1,4 @@
 * has_many serialization
 * convenient generators that make nice indexes for people
 * allow other than ActiveRecord
+* Rails 3 compatiblity - should be super easy
