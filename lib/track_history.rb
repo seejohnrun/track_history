@@ -1,6 +1,7 @@
 module TrackHistory
 
   autoload :VERSION, File.join(File.dirname(__FILE__), 'track_history', 'version')
+  require 'rubygems'
   require 'active_record'
 
   def self.install
