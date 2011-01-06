@@ -19,9 +19,10 @@ module TrackHistory
     # Takes a hash of options, which can only be :model_name to force a different model name
     # Default model name is ModelHistory
     def track_history(options = {})
+      options.assert_valid_keys(:model_name, :table_name)
       @historical_fields = []
       @historical_tracks = {}
-      define_historical_model(self, options[:model_name])
+      define_historical_model(self, options[:model_name], options[:table_name])
       yield if block_given?
     end
 
@@ -43,13 +44,13 @@ module TrackHistory
 
     private
 
-    def define_historical_model(base, class_name)
-
-      class_name ||= "#{base.name}History"
-      klass = Object.const_set(class_name, Class.new(ActiveRecord::Base))
+    def define_historical_model(base, model_name, table_name)
+      model_name ||= "#{base.name}History"
+      klass = Object.const_set(model_name, Class.new(ActiveRecord::Base))
       @klass_reference = klass
      
       # infer fields
+      klass.send(:table_name=, table_name) unless table_name.nil?
       klass.columns_hash.each_key do |k| 
         matches = k.match(/(.+?)_before$/)
         if matches && matches.size == 2 && field_name = matches[1]
@@ -65,7 +66,7 @@ module TrackHistory
 
       # tell the other class about us
       # purposely don't define these until after getting historical_fields
-      has_many :histories, :class_name => class_name, :order => 'created_at desc', :dependent => :destroy
+      has_many :histories, :class_name => model_name, :order => 'created_at desc', :dependent => :destroy
       before_update :record_historical_changes
 
     end

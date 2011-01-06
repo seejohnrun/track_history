@@ -55,6 +55,7 @@ But wait, you say!  I want to use this to annotate some more information when th
 If you need to change the name of the model, you can do something like:
 
     track_history :model_name => 'UserAudit'
+    track_history :table_name => 'user_audits'
 
 ---
 
