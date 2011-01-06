@@ -13,6 +13,7 @@ describe TrackHistory do
         annotate :note
         annotate(:note2) { "hello old #{name_was}" }
         def note; NOTE; end
+        def to_s; "user: #{name}"; end
       end
     end
   end
@@ -54,6 +55,24 @@ describe TrackHistory do
     user = ComplexUser.create(:name => 'john')
     user.update_attributes(:name => 'john2', :email => 'foo@foo.com')
     user.histories.first.modifications.sort.should == ['email', 'name']
+  end
+
+  it 'should have a good to_s for one field modifications' do
+    user = ComplexUser.create(:name => 'john')
+    user.update_attributes(:name => 'john2')
+    user.histories.first.to_s.should == 'modified name on user: john2'
+  end
+
+  it 'should have a good to_s for two field modifications' do
+    user = ComplexUser.create(:name => 'john', :email => 'foo@foo.com')
+    user.update_attributes(:name => 'john2', :email => 'foo2@foo2.com')
+    user.histories.first.to_s.should == 'modified email, name on user: john2'
+  end
+
+  it 'should have a good to_s when moving to nil' do
+    user = ComplexUser.create(:name => 'john')
+    user.update_attributes(:email => 'foo@foo.com')
+    user.histories.first.to_s.should == 'modified email on user: john'
   end
 
   it 'should be able to take a field from nil to something and record that' do

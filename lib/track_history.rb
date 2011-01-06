@@ -18,16 +18,16 @@ module TrackHistory
     # Make a model historical
     # Takes a hash of options, which can only be :model_name to force a different model name
     # Default model name is ModelHistory
-    def track_history(options = {})
+    def track_history(options = {}, &block)
       options.assert_valid_keys(:model_name, :table_name)
       @historical_fields = []
       @historical_tracks = {}
       define_historical_model(self, options[:model_name], options[:table_name])
-      yield if block_given?
+      module_eval(&block) if block_given?
     end
 
     def annotate(field, &block) # haha
-      @historical_tracks ||= []
+      @historical_tracks ||= {}
       @historical_tracks[field] = block
       unless @klass_reference.columns_hash.has_key?(field.is_a?(Symbol) ? field.to_s : field) 
         raise ActiveRecord::StatementInvalid.new("No such attribute '#{field}' on #{@klass_reference.name}")
@@ -83,9 +83,7 @@ module TrackHistory
     end
 
     def to_s
-      modifications.map do |field|
-        "#{field}: " + send(:"#{field}_before") + '=>' + send(:"#{field}_after")
-      end.join(', ')
+      'modified ' + modifications.join(', ') + " on #{historical_relation}"
     end
 
   end
