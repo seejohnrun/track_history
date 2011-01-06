@@ -64,8 +64,8 @@ module TrackHistory
 
       # tell the other class about us
       # purposely don't define these until after getting historical_fields
-      has_many :histories, :class_name => class_name, :order => 'created_at desc'
-      before_save :record_historical_changes
+      has_many :histories, :class_name => class_name, :order => 'created_at desc', :dependent => :destroy
+      before_update :record_historical_changes
 
     end
 
@@ -78,6 +78,12 @@ module TrackHistory
       historical_relation.class.historical_fields.reject do |field|
         send(:"#{field}_before") == send(:"#{field}_after")
       end
+    end
+
+    def to_s
+      modifications.map do |field|
+        "#{field}: " + send(:"#{field}_before") + '=>' + send(:"#{field}_after")
+      end.join(', ')
     end
 
   end
