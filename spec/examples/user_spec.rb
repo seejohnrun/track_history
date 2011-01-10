@@ -19,6 +19,7 @@ describe TrackHistory do
   # clean up each time
   before(:each) do
     User.destroy_all
+    UserHistory.destroy_all
   end
 
   it 'should know its own historical fields' do
@@ -100,11 +101,13 @@ describe TrackHistory do
   
   it 'should work with dependent => destroy appropriately' do
     user = User.create(:name => 'john')
+    user_id = user.id
     user.update_attributes(:name => 'john2')
     user.histories.size.should == 1
 
     User.destroy_all
-    UserHistory.count.should == 0
+    UserHistory.count.should == 1
+    UserHistory.first.user_id.should == user_id
   end
 
 end

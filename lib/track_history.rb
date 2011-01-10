@@ -66,7 +66,7 @@ module TrackHistory
 
       # tell the other class about us
       # purposely don't define these until after getting historical_fields
-      has_many :histories, :class_name => model_name, :order => 'created_at desc', :dependent => :destroy
+      has_many :histories, :class_name => model_name, :order => 'created_at desc'
       before_update :record_historical_changes
 
     end
