@@ -34,6 +34,7 @@ But wait, you say!  I want to use this to annotate some more information when th
     
     track_history do
       annotate :name
+      annotate :name, :as => :the_name
     end
 
     # or you can pass a block

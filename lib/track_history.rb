@@ -24,12 +24,15 @@ module TrackHistory
       module_eval(&block) if block_given?
     end
 
-    def annotate(field, &block) # haha
-      if historical_class.columns_hash.has_key?(field.is_a?(Symbol) ? field.to_s : field) 
-        historical_class.historical_tracks[field] = block
-      else
+    def annotate(field, options = {}, &block) # haha
+      options.assert_valid_keys(:as)
+      save_as = options.has_key?(:as) ? options[:as] : field
+
+      unless historical_class.columns_hash.has_key?(save_as.to_s)
         raise ActiveRecord::StatementInvalid.new("No such attribute '#{field}' on #{@klass_reference.name}")
       end
+
+      historical_class.historical_tracks[save_as] = block.nil? ? field : block
     end
 
     def historical_class
@@ -114,7 +117,7 @@ module TrackHistory
       return if attributes.empty? # nothing changed - skip out 
       # then go through each track
       historical_tracks.each do |field, block|
-        attributes[field] = block.nil? ? send(field) : (block.arity == 1 ? block.call(self) : instance_eval(&block)) # give access to the user object
+        attributes[field] = block.is_a?(Symbol) ? send(block) : (block.arity == 1 ? block.call(self) : instance_eval(&block)) # give access to the user object
       end
       # record the change
       if self.class.historical_class.track_historical_reference?
