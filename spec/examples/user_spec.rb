@@ -60,6 +60,7 @@ describe TrackHistory do
 
   it 'should not create histories when creating a new object' do
     user = User.create(:name => 'john')
+    user.respond_to?(:historical_fields).should == false
     user.histories.size.should == 0
   end
 

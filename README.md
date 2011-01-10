@@ -42,6 +42,10 @@ But wait, you say!  I want to use this to annotate some more information when th
       annotate(:name) { "#{name} !!!" }
     end
 
+And if you don't want the reference field maintained for whatever reason:
+
+    track_history :reference => false
+
 ---
 
 ## Installation
