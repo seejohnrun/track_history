@@ -49,9 +49,9 @@ And if you don't want the reference field maintained for whatever reason:
 
 ---
 
-## Installation
+## Installation (in your Gemfile)
 
-    gem install track_history
+    gem 'track_history', '0.0.5'
 
 ---
 
