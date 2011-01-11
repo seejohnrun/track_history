@@ -4,7 +4,6 @@
 
 needed to announce
 ------------------
-* separate modules into separate files and autoload them
 * separate inference before / after need
 * option to disable inference
 * track all used historical fields and report conflicts via 'raise'
