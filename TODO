@@ -1,11 +1,14 @@
-* before and after should be able to be strings
 * has_many serialization
 * convenient generators that make nice indexes for people
 * allow other than ActiveRecord
-* change away from Hash
-* write tests for instace methods on *History
-* make sure Historical instance methods don't include historical_fields
-* track all used historical fields and report conflicts via 'raise'
-* option to disable inference
-* separate inference before / after need
+
+needed to announce
+------------------
 * separate modules into separate files and autoload them
+* separate inference before / after need
+* option to disable inference
+* track all used historical fields and report conflicts via 'raise'
+* make sure Historical instance methods don't include historical_fields
+* change away from Hash and towards other classes
+* before and after should be able to be strings
+* if you specify just one of before / after - you should not save the other
