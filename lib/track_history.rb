@@ -84,12 +84,12 @@ module TrackHistory
 
       # tell the other class about us
       # purposely don't define these until after getting historical_fields
-      before_update { |c| c.send(:record_historical_changes, 'update') }
+      before_update :record_historical_changes
 
       # track other things (optionally)
       unless @klass_reference.historical_action_field.nil?
-        after_create { |c| c.send(:record_historical_changes, 'create') }
-        before_destroy { |c| c.send(:record_historical_changes, 'destroy') }
+        after_create :record_historical_changes_on_create
+        before_destroy :record_historical_changes_on_destroy
       end
 
     end
@@ -100,7 +100,15 @@ module TrackHistory
 
     private
 
-    def record_historical_changes(action)
+    def record_historical_changes_on_destroy
+      record_historical_changes('destroy')
+    end
+
+    def record_historical_changes_on_create
+      record_historical_changes('create')
+    end
+
+    def record_historical_changes(action = 'update')
       historical_fields = self.class.historical_class.historical_fields
       historical_tracks = self.class.historical_class.historical_tracks
       return if historical_fields.empty? && historical_tracks.empty?
