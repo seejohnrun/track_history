@@ -3,6 +3,7 @@
 * allow other than ActiveRecord
 * change away from Hash
 * write tests for instace methods on *History
+* make sure Historical instance methods don't include historical_fields
 * track all used historical fields and report conflicts via 'raise'
 * option to disable inference
 * separate inference before / after need
