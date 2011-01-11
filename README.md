@@ -15,7 +15,7 @@ Then create a migration for a table with the following structure (generator comi
 
 If you want to also record creations and deletions, you should add a column like:
 
-    action ENUM ('create', 'update', 'destroy')
+    action ENUM ('create', 'update', 'destroy') # action can also be a varchar
 
 You will automatically get:
 

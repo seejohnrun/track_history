@@ -3,11 +3,10 @@
 * allow other than ActiveRecord
 
 ------------------
-* separate inference before / after need
-* option to disable inference
-* track all used historical fields and report conflicts via 'raise'
-* change away from Hash and towards other classes
-* before and after should be able to be strings
+* separate need for inferrence to have before && after
+* option to disable inferring of fields to track
+* track all used historical fields and raise conflicts
+* before and after should be able to be strings as specified to #field
 * make the enum field nameable
 * ability to enable and disable the action enum
 * make created_at optional
