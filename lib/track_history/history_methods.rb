@@ -15,10 +15,11 @@ module HistoryMethods
   end
 
   def field(field, options = {})
+    options.assert_valid_keys(:before, :after)
     field_s = field.is_a?(String) ? field : field.to_s
     historical_fields[field_s] = { 
-      :before => options[:before] || "#{field}_before".to_sym,
-      :after => options[:after] || "#{field}_after".to_sym
+      :before => options[:before] || nil,
+      :after => options[:after] || nil
     }
     nil
   end

@@ -2,7 +2,6 @@
 * convenient generators that make nice indexes for people
 * allow other than ActiveRecord
 
-needed to announce
 ------------------
 * separate inference before / after need
 * option to disable inference
@@ -12,3 +11,5 @@ needed to announce
 * if you specify just one of before / after - you should not save the other
 * make the enum field nameable
 * ability to enable and disable the action enum
+* make created_at optional
+* should be able to have a before field only (naturally named _before) and no after field

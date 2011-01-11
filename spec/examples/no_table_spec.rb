@@ -4,6 +4,7 @@ describe TrackHistory do
 
   before(:all) do
     ActiveRecord::Base.connection.execute("create table anon_users (id integer primary key auto_increment, name varchar(256))")
+    TrackHistory.disable_warnings
     class AnonUser < ActiveRecord::Base
       validates_length_of :name, :minimum => 2
       track_history

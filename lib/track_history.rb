@@ -11,6 +11,14 @@ module TrackHistory
     ActiveRecord::Base.send(:include, self)
   end
 
+  def self.warnings_disabled?
+    @warnings_disabled ||= false
+  end
+
+  def self.disable_warnings
+    @warnings_disabled = true
+  end
+
   def self.included(base)
     base.extend ActsAsMethods
     base.send(:include, InstanceMethods)
@@ -40,7 +48,7 @@ module TrackHistory
       @klass_reference.send(:table_name=, table_name) unless table_name.nil?
 
       unless @klass_reference.table_exists?
-        STDERR.puts "[TrackHistory] No such table exists: #{@klass_reference.table_name}"
+        $stderr.puts "[TrackHistory] No such table exists: #{@klass_reference.table_name} - #{self.name} history will not be tracked" unless TrackHistory.warnings_disabled?
         return
       end
  
@@ -100,8 +108,8 @@ module TrackHistory
       attributes = {}
       historical_fields.each do |field, field_options|
         next if !send(:"#{field}_changed?") && action == 'update'
-        after_value = action == 'destroy' ? nil : send(field.to_sym) # special tracking on deletions
-        attributes.merge! field_options[:before] => send(:"#{field}_was"), field_options[:after] => after_value
+        attributes[field_options[:after]] = (action == 'destroy' ? nil : send(field.to_sym)) if field_options[:after] # special tracking on deletions
+        attributes[field_options[:before]]  = send(:"#{field}_was") if field_options[:before]
       end
       return if attributes.empty? && action == 'update' # nothing changed - skip out 
       # then go through each track
