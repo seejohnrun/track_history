@@ -1,3 +1,5 @@
+require 'lib/track_history/version'
+
 spec = Gem::Specification.new do |s|
   
   s.name = 'track_history'
