@@ -29,7 +29,7 @@ module HistoryMethods
     save_as = options.has_key?(:as) ? options[:as] : field
 
     unless columns_hash.has_key?(save_as.to_s)
-      raise ActiveRecord::StatementInvalid.new("No such attribute '#{field}' on #{@klass_reference.name}")
+      raise ActiveRecord::StatementInvalid.new("No such attribute '#{save_as}' on #{self.name}")
     end
 
     historical_tracks[save_as] = block.nil? ? field : block

@@ -54,15 +54,6 @@ module TrackHistory
  
       # get the history class in line
       @klass_reference.send(:extend, HistoryMethods)
-
-      # infer fields
-      @klass_reference.columns_hash.each_key do |k| 
-        matches = k.match(/(.+?)_before$/)
-        if matches && matches.size == 2 && field_name = matches[1]
-          next if @klass_reference.historical_fields.has_key?(field_name) # override inferrences
-          @klass_reference.historical_fields[field_name] = { :before => "#{field_name}_before".to_sym, :after => "#{field_name}_after".to_sym }
-        end
-      end
  
       # figure out the field for tracking action (enum)
       @klass_reference.instance_variable_set(:@historical_action_field, @klass_reference.columns_hash.has_key?('action') ? 'action' : nil)
@@ -70,6 +61,15 @@ module TrackHistory
 
       # allow other things to be specified
       @klass_reference.module_eval(&block) if block_given?
+
+      # infer fields
+      @klass_reference.columns_hash.each_key do |k| 
+        matches = k.match(/(.+?)_before$/)
+        if matches && matches.size == 2 && field_name = matches[1]
+          next if @klass_reference.historical_fields.has_key?(field_name) || @klass_reference.historical_tracks.has_key?(field_name) # override inferrences
+          @klass_reference.historical_fields[field_name] = { :before => "#{field_name}_before".to_sym, :after => "#{field_name}_after".to_sym }
+        end
+      end
       
       # create the history class
       rel = base.name.singularize.underscore.downcase.to_sym
