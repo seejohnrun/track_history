@@ -11,3 +11,5 @@ needed to announce
 * change away from Hash and towards other classes
 * before and after should be able to be strings
 * if you specify just one of before / after - you should not save the other
+* make the enum field nameable
+* ability to enable and disable the action enum

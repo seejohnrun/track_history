@@ -38,9 +38,8 @@ module TrackHistory
       # figure out the model name
       model_name ||= "#{base.name}History"
       @klass_reference = Object.const_set(model_name, Class.new(ActiveRecord::Base))
-
-      # set up a way to record tracks
-      @klass_reference.instance_variable_set(:@track_historical_reference, track_reference) 
+ 
+      # get the history class in line
       @klass_reference.send(:extend, HistoryMethods)
 
       # infer fields
@@ -52,7 +51,11 @@ module TrackHistory
           @klass_reference.historical_fields[field_name] = { :before => "#{field_name}_before".to_sym, :after => "#{field_name}_after".to_sym }
         end
       end
-     
+ 
+      # figure out the field for tracking action (enum)
+      @klass_reference.instance_variable_set(:@historical_action_field, @klass_reference.columns_hash.has_key?('action') ? 'action' : nil)
+      @klass_reference.instance_variable_set(:@track_historical_reference, track_reference) 
+
       # allow other things to be specified
       @klass_reference.module_eval(&block) if block_given?
       
@@ -64,12 +67,18 @@ module TrackHistory
       if track_reference
         @klass_reference.belongs_to rel
         @klass_reference.send(:alias_method, :historical_relation, rel)
-        has_many :histories, :class_name => model_name, :order => 'created_at desc' if track_reference
+        has_many :histories, :class_name => model_name, :order => 'created_at desc, id desc' if track_reference
       end
 
       # tell the other class about us
       # purposely don't define these until after getting historical_fields
-      before_update :record_historical_changes
+      before_update { |c| c.send(:record_historical_changes, 'update') }
+
+      # track other things (optionally)
+      unless @klass_reference.historical_action_field.nil?
+        after_create { |c| c.send(:record_historical_changes, 'create') }
+        before_destroy { |c| c.send(:record_historical_changes, 'destroy') }
+      end
 
     end
 
@@ -77,7 +86,7 @@ module TrackHistory
 
   module HistoryMethods
 
-    attr_reader :historical_fields
+    attr_reader :historical_fields, :historical_action_field
 
     def track_historical_reference?
       @track_historical_reference
@@ -91,7 +100,7 @@ module TrackHistory
       @historical_tracks ||= {}
     end
 
-    def field(field, options = {}) # TODO rename
+    def field(field, options = {})
       field_s = field.is_a?(String) ? field : field.to_s
       historical_fields[field_s] = { 
         :before => options[:before] || "#{field}_before".to_sym,
@@ -135,20 +144,24 @@ module TrackHistory
 
     private
 
-    def record_historical_changes
+    def record_historical_changes(action)
       historical_fields = self.class.historical_class.historical_fields
       historical_tracks = self.class.historical_class.historical_tracks
       return if historical_fields.empty? && historical_tracks.empty?
       # go through each and build the hashes
       attributes = {}
       historical_fields.each do |field, field_options|
-        next unless send(:"#{field}_changed?")
+        next if !send(:"#{field}_changed?")
         attributes.merge! field_options[:before] => send(:"#{field}_was"), field_options[:after] => send(field.to_sym)
       end
-      return if attributes.empty? # nothing changed - skip out 
+      return if attributes.empty? && action == 'update' # nothing changed - skip out 
       # then go through each track
       historical_tracks.each do |field, block|
         attributes[field] = block.is_a?(Symbol) ? send(block) : (block.arity == 1 ? block.call(self) : instance_eval(&block)) # give access to the user object
+      end
+      # determine the action_type if needed
+      if action_field = self.class.historical_class.historical_action_field
+        attributes[action_field] = action
       end
       # record the change
       if self.class.historical_class.track_historical_reference?

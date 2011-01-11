@@ -13,6 +13,10 @@ Then create a migration for a table with the following structure (generator comi
 
     id, user_id, email_before, email_after, created_at
 
+If you want to also record creations and deletions, you should add a column like:
+
+    action ENUM ('create', 'update', 'destroy')
+
 You will automatically get:
 
     user.histories
