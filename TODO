@@ -1,4 +1,9 @@
 * has_many serialization
 * convenient generators that make nice indexes for people
 * allow other than ActiveRecord
-* Rails 3 compatiblity - should be super easy
+* change away from Hash
+* change to module form
+* write tests for instace methods on *History
+* track all used historical fields and report conflicts via 'raise'
+* option to disable inference
+* separate inference before / after need

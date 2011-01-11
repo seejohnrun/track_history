@@ -12,9 +12,9 @@ describe TrackHistory do
       track_history do
         annotate :note
         annotate(:note2) { "hello old #{name_was}" }
-        def note; NOTE; end
-        def to_s; "user: #{name}"; end
       end
+      def note; NOTE; end
+      def to_s; "user: #{name}"; end
     end
   end
 

@@ -20,28 +20,20 @@ module TrackHistory
     # Default model name is ModelHistory
     def track_history(options = {}, &block)
       options.assert_valid_keys(:model_name, :table_name, :reference)
-      define_historical_model(self, options[:model_name], options[:table_name], options.has_key?(:reference) ? !!options[:reference] : true)
-      module_eval(&block) if block_given?
-    end
-
-    def annotate(field, options = {}, &block) # haha
-      options.assert_valid_keys(:as)
-      save_as = options.has_key?(:as) ? options[:as] : field
-
-      unless historical_class.columns_hash.has_key?(save_as.to_s)
-        raise ActiveRecord::StatementInvalid.new("No such attribute '#{field}' on #{@klass_reference.name}")
-      end
-
-      historical_class.historical_tracks[save_as] = block.nil? ? field : block
+      define_historical_model(self, options[:model_name], options[:table_name], options.has_key?(:reference) ? !!options[:reference] : true, &block)
     end
 
     def historical_class
       @klass_reference
     end
 
+    def historical_fields
+      @klass_reference.historical_fields.keys
+    end
+
     private
 
-    def define_historical_model(base, model_name, table_name, track_reference)
+    def define_historical_model(base, model_name, table_name, track_reference, &block)
 
       # figure out the model name
       model_name ||= "#{base.name}History"
@@ -50,19 +42,42 @@ module TrackHistory
 
       # set up a way to record tracks
       def @klass_reference.historical_tracks; @historical_tracks ||= {}; end
-      def @klass_reference.historical_fields; @historical_fields ||= []; end
+      def @klass_reference.historical_fields; @historical_fields ||= {}; end
       def @klass_reference.track_historical_reference?; @track_historical_reference; end
-      @klass_reference.instance_variable_set(:@track_historical_reference, track_reference)
+      @klass_reference.instance_variable_set(:@track_historical_reference, track_reference) 
+
+      def @klass_reference.annotate(field, options = {}, &block) # haha
+        options.assert_valid_keys(:as)
+        save_as = options.has_key?(:as) ? options[:as] : field
+
+        unless columns_hash.has_key?(save_as.to_s)
+          raise ActiveRecord::StatementInvalid.new("No such attribute '#{field}' on #{@klass_reference.name}")
+        end
+
+        historical_tracks[save_as] = block.nil? ? field : block
+      end
+
+      def @klass_reference.field(field, options = {}) # TODO rename
+        field_s = field.is_a?(String) ? field : field.to_s
+        historical_fields[field_s] = { 
+          :before => options[:before] || "#{field}_before".to_sym,
+          :after => options[:after] || "#{field}_after".to_sym
+        }
+        nil
+      end
 
       # infer fields
       klass.send(:table_name=, table_name) unless table_name.nil?
       klass.columns_hash.each_key do |k| 
         matches = k.match(/(.+?)_before$/)
         if matches && matches.size == 2 && field_name = matches[1]
-          klass.historical_fields << field_name if klass.columns_hash.has_key?("#{field_name}_after")
+          next if klass.historical_fields.has_key?(field_name) # override inferrences
+          klass.historical_fields[field_name] = { :before => "#{field_name}_before".to_sym, :after => "#{field_name}_after".to_sym }
         end
       end
      
+      @klass_reference.module_eval(&block) if block_given?
+      
       # create the history class
       rel = base.name.singularize.underscore.downcase.to_sym
       klass.send(:include, HistoricalRelationHelpers)
@@ -70,7 +85,6 @@ module TrackHistory
       if track_reference
         klass.belongs_to rel
         klass.send(:alias_method, :historical_relation, rel)
-        self.class.send(:define_method, :historical_fields) { klass.historical_fields }
       end
 
       # tell the other class about us
@@ -86,9 +100,9 @@ module TrackHistory
 
     # Get a list of the modifications in a given history
     def modifications
-      self.class.historical_fields.reject do |field|
-        send(:"#{field}_before") == send(:"#{field}_after")
-      end
+      self.class.historical_fields.reject do |field, options|
+        send(options[:before]) == send(options[:after])
+      end.keys
     end
 
     def to_s
@@ -110,9 +124,9 @@ module TrackHistory
       return if historical_fields.empty? && historical_tracks.empty?
       # go through each and build the hashes
       attributes = {}
-      historical_fields.each do |field|
+      historical_fields.each do |field, field_options|
         next unless send(:"#{field}_changed?")
-        attributes.merge! :"#{field}_before" => send(:"#{field}_was"), :"#{field}_after" => send(field.to_sym)
+        attributes.merge! field_options[:before] => send(:"#{field}_was"), field_options[:after] => send(field.to_sym)
       end
       return if attributes.empty? # nothing changed - skip out 
       # then go through each track

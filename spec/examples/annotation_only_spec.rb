@@ -8,10 +8,8 @@ describe TrackHistory do
     class Beer < ActiveRecord::Base
       track_history :reference => false do
         annotate :john
-        def john
-          'hi'
-        end
       end
+      def john; 'hi'; end
     end
   end
 
