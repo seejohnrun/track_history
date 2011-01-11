@@ -93,7 +93,7 @@ module TrackHistory
 
     def to_s
       return 'modified nothing' if modifications.empty?
-      str = 'modified ' + modifications.join(', ')
+      str = 'modified ' + modifications.sort.join(', ')
       str += " on #{historical_relation}" if self.class.instance_variable_get(:@track_historical_reference)
       str
     end
