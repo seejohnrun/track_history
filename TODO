@@ -2,8 +2,8 @@
 * convenient generators that make nice indexes for people
 * allow other than ActiveRecord
 * change away from Hash
-* change to module form
 * write tests for instace methods on *History
 * track all used historical fields and report conflicts via 'raise'
 * option to disable inference
 * separate inference before / after need
+* separate modules into separate files and autoload them

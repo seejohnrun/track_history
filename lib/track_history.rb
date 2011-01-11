@@ -41,30 +41,8 @@ module TrackHistory
       @klass_reference = klass
 
       # set up a way to record tracks
-      def @klass_reference.historical_tracks; @historical_tracks ||= {}; end
-      def @klass_reference.historical_fields; @historical_fields ||= {}; end
-      def @klass_reference.track_historical_reference?; @track_historical_reference; end
       @klass_reference.instance_variable_set(:@track_historical_reference, track_reference) 
-
-      def @klass_reference.annotate(field, options = {}, &block) # haha
-        options.assert_valid_keys(:as)
-        save_as = options.has_key?(:as) ? options[:as] : field
-
-        unless columns_hash.has_key?(save_as.to_s)
-          raise ActiveRecord::StatementInvalid.new("No such attribute '#{field}' on #{@klass_reference.name}")
-        end
-
-        historical_tracks[save_as] = block.nil? ? field : block
-      end
-
-      def @klass_reference.field(field, options = {}) # TODO rename
-        field_s = field.is_a?(String) ? field : field.to_s
-        historical_fields[field_s] = { 
-          :before => options[:before] || "#{field}_before".to_sym,
-          :after => options[:after] || "#{field}_after".to_sym
-        }
-        nil
-      end
+      @klass_reference.send(:extend, HistoryMethods)
 
       # infer fields
       klass.send(:table_name=, table_name) unless table_name.nil?
@@ -92,6 +70,44 @@ module TrackHistory
       has_many :histories, :class_name => model_name, :order => 'created_at desc' if track_reference
       before_update :record_historical_changes
 
+    end
+
+  end
+
+  module HistoryMethods
+
+    attr_reader :historical_fields
+
+    def track_historical_reference?
+      @track_historical_reference
+    end
+
+    def historical_fields
+      @historical_fields ||= {}
+    end
+
+    def historical_tracks
+      @historical_tracks ||= {}
+    end
+
+    def field(field, options = {}) # TODO rename
+      field_s = field.is_a?(String) ? field : field.to_s
+      historical_fields[field_s] = { 
+        :before => options[:before] || "#{field}_before".to_sym,
+        :after => options[:after] || "#{field}_after".to_sym
+      }
+      nil
+    end
+
+    def annotate(field, options = {}, &block) # haha
+      options.assert_valid_keys(:as)
+      save_as = options.has_key?(:as) ? options[:as] : field
+
+      unless columns_hash.has_key?(save_as.to_s)
+        raise ActiveRecord::StatementInvalid.new("No such attribute '#{field}' on #{@klass_reference.name}")
+      end
+
+      historical_tracks[save_as] = block.nil? ? field : block
     end
 
   end
