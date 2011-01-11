@@ -8,7 +8,6 @@ needed to announce
 * separate inference before / after need
 * option to disable inference
 * track all used historical fields and report conflicts via 'raise'
-* make sure Historical instance methods don't include historical_fields
 * change away from Hash and towards other classes
 * before and after should be able to be strings
 * if you specify just one of before / after - you should not save the other

@@ -37,6 +37,12 @@ describe TrackHistory do
     door.update_attributes(:name => 'john2')
     DoorHistory.first.instance_note.should == 'instance_note'
   end
+  
+  it 'should not have historical_fields as an instance method' do
+    door = Door.create(:name => 'john')
+    door.update_attributes(:name => 'john2')
+    DoorHistory.first.should_not respond_to(:historical_fields)
+  end
 
 end
 
