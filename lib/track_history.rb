@@ -37,37 +37,38 @@ module TrackHistory
 
       # figure out the model name
       model_name ||= "#{base.name}History"
-      klass = Object.const_set(model_name, Class.new(ActiveRecord::Base))
-      @klass_reference = klass
+      @klass_reference = Object.const_set(model_name, Class.new(ActiveRecord::Base))
 
       # set up a way to record tracks
       @klass_reference.instance_variable_set(:@track_historical_reference, track_reference) 
       @klass_reference.send(:extend, HistoryMethods)
 
       # infer fields
-      klass.send(:table_name=, table_name) unless table_name.nil?
-      klass.columns_hash.each_key do |k| 
+      @klass_reference.send(:table_name=, table_name) unless table_name.nil?
+      @klass_reference.columns_hash.each_key do |k| 
         matches = k.match(/(.+?)_before$/)
         if matches && matches.size == 2 && field_name = matches[1]
-          next if klass.historical_fields.has_key?(field_name) # override inferrences
-          klass.historical_fields[field_name] = { :before => "#{field_name}_before".to_sym, :after => "#{field_name}_after".to_sym }
+          next if @klass_reference.historical_fields.has_key?(field_name) # override inferrences
+          @klass_reference.historical_fields[field_name] = { :before => "#{field_name}_before".to_sym, :after => "#{field_name}_after".to_sym }
         end
       end
      
+      # allow other things to be specified
       @klass_reference.module_eval(&block) if block_given?
       
       # create the history class
       rel = base.name.singularize.underscore.downcase.to_sym
-      klass.send(:include, HistoricalRelationHelpers)
+      @klass_reference.send(:include, HistoricalRelationHelpers)
 
+      # create a backward reference
       if track_reference
-        klass.belongs_to rel
-        klass.send(:alias_method, :historical_relation, rel)
+        @klass_reference.belongs_to rel
+        @klass_reference.send(:alias_method, :historical_relation, rel)
+        has_many :histories, :class_name => model_name, :order => 'created_at desc' if track_reference
       end
 
       # tell the other class about us
       # purposely don't define these until after getting historical_fields
-      has_many :histories, :class_name => model_name, :order => 'created_at desc' if track_reference
       before_update :record_historical_changes
 
     end
