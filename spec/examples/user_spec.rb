@@ -22,10 +22,6 @@ describe TrackHistory do
     UserHistory.destroy_all
   end
 
-  it 'should know its own historical fields' do
-    User.historical_fields.should == ['name']
-  end
-
   it 'should be able to get the user from :user' do
     user = User.create(:name => 'john')
     user.update_attributes(:name => 'john2')

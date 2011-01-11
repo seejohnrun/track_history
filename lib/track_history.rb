@@ -27,10 +27,6 @@ module TrackHistory
       @klass_reference
     end
 
-    def historical_fields
-      @klass_reference.historical_fields.keys
-    end
-
     private
 
     def define_historical_model(base, model_name, table_name, track_reference, &block)
@@ -38,12 +34,17 @@ module TrackHistory
       # figure out the model name
       model_name ||= "#{base.name}History"
       @klass_reference = Object.const_set(model_name, Class.new(ActiveRecord::Base))
+      @klass_reference.send(:table_name=, table_name) unless table_name.nil?
+
+      unless @klass_reference.table_exists?
+        STDERR.puts "[TrackHistory] No such table exists: #{@klass_reference.table_name}"
+        return
+      end
  
       # get the history class in line
       @klass_reference.send(:extend, HistoryMethods)
 
       # infer fields
-      @klass_reference.send(:table_name=, table_name) unless table_name.nil?
       @klass_reference.columns_hash.each_key do |k| 
         matches = k.match(/(.+?)_before$/)
         if matches && matches.size == 2 && field_name = matches[1]
