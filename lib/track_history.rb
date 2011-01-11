@@ -151,8 +151,9 @@ module TrackHistory
       # go through each and build the hashes
       attributes = {}
       historical_fields.each do |field, field_options|
-        next if !send(:"#{field}_changed?")
-        attributes.merge! field_options[:before] => send(:"#{field}_was"), field_options[:after] => send(field.to_sym)
+        next if !send(:"#{field}_changed?") && action == 'update'
+        after_value = action == 'destroy' ? nil : send(field.to_sym) # special tracking on deletions
+        attributes.merge! field_options[:before] => send(:"#{field}_was"), field_options[:after] => after_value
       end
       return if attributes.empty? && action == 'update' # nothing changed - skip out 
       # then go through each track

@@ -46,6 +46,9 @@ describe TrackHistory do
     history = BasicUserHistory.first
     history.basic_user_id.should == user.id # make sure the reference is maintained
     history.action.should == 'destroy'
+    history.name_before.should == 'john'
+    history.name_after.should == nil # we do this for convenience
+    history.modifications.should == ['name']
   end
 
 end
