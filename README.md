@@ -41,6 +41,12 @@ But wait, you say!  I want to use this to annotate some more information when th
       annotate(:name) { "#{name} !!!" }
     end
 
+If you need to change the field names to work with legacy tables you can do that too:
+
+    track_history do
+      field :name, :before => :name_from, :after => :name_to
+    end
+
 And if you don't want the reference field maintained for whatever reason:
 
     track_history :reference => false

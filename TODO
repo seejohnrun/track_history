@@ -1,3 +1,4 @@
+* before and after should be able to be strings
 * has_many serialization
 * convenient generators that make nice indexes for people
 * allow other than ActiveRecord
