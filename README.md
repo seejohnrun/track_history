@@ -57,6 +57,17 @@ And if you don't want the reference field maintained for whatever reason:
 
 ---
 
+## Adding methods to *History
+
+To add methods to your History classes, or create additional relationships that you may need, you can work directly in the `track_history` block:
+
+    track_history(:model_name => 'WorkflowChange', :reference => false) do
+      annotate :object_id
+      self.belongs_to :object
+    end
+
+---
+
 ## Installation (in your Gemfile)
 
     gem 'track_history', '0.0.10'
