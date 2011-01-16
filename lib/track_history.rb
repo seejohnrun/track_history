@@ -53,7 +53,7 @@ module TrackHistory
       end
  
       # get the history class in line
-      @klass_reference.send(:extend, HistoryMethods)
+      @klass_reference.send(:extend, TrackHistory::HistoryMethods)
  
       # figure out the field for tracking action (enum)
       @klass_reference.instance_variable_set(:@historical_action_field, @klass_reference.columns_hash.has_key?('action') ? 'action' : nil)
@@ -73,13 +73,13 @@ module TrackHistory
       
       # create the history class
       rel = base.name.singularize.underscore.downcase.to_sym
-      @klass_reference.send(:include, HistoricalRelationHelpers)
+      @klass_reference.send(:include, TrackHistory::HistoricalRelationHelpers)
 
       # create a backward reference
       if track_reference
         @klass_reference.belongs_to rel
         @klass_reference.send(:alias_method, :historical_relation, rel)
-        has_many :histories, :class_name => model_name, :order => 'created_at desc, id desc' if track_reference
+        has_many :histories, :class_name => model_name, :order => 'id desc' if track_reference
       end
 
       # tell the other class about us

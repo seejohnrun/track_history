@@ -1,4 +1,4 @@
-require 'lib/track_history/version'
+require File.dirname(__FILE__) + '/lib/track_history/version'
 
 spec = Gem::Specification.new do |s|
   
