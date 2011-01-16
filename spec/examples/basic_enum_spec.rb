@@ -43,7 +43,7 @@ describe TrackHistory do
     user = BasicUser.create(:name => 'john')
     user.destroy
 
-    history = user.histories.order('id desc').first
+    history = user.histories.find(:first, :order => 'id desc')
     history.basic_user_id.should == user.id # make sure the reference is maintained
     history.action.should == 'destroy'
     history.name_before.should == 'john'

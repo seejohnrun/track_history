@@ -1,5 +1,5 @@
 require 'spec/rake/spectask'
-require 'lib/track_history/version'
+require File.dirname(__FILE__) + '/lib/track_history/version'
  
 task :build => :test do
   system "gem build track_history.gemspec"
