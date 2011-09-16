@@ -19,7 +19,7 @@ describe TrackHistory do
   # clean up each time
   before(:each) do
     User.destroy_all
-    UserHistory.destroy_all
+    User::History.destroy_all
   end
 
   it 'should be able to get the user from :user' do
@@ -103,8 +103,8 @@ describe TrackHistory do
     user.histories.size.should == 1
 
     User.destroy_all
-    UserHistory.count.should == 1
-    UserHistory.first.user_id.should == user_id
+    User::History.count.should == 1
+    User::History.first.user_id.should == user_id
   end
 
 end

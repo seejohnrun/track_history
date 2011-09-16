@@ -18,7 +18,7 @@ describe TrackHistory do
   # clean up each time
   before(:each) do
     BasicUser.destroy_all
-    BasicUserHistory.destroy_all
+    BasicUser::History.destroy_all
   end
 
   it 'should record an action on create when there is an action field' do

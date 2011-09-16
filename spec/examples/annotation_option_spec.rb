@@ -23,14 +23,14 @@ describe TrackHistory do
   # clean up each time
   before(:each) do
     Drink.destroy_all
-    DrinkHistory.destroy_all
+    Drink::History.destroy_all
   end
 
   it 'should be able to alias a field' do
     drink = Drink.create(:name => 'john')
     drink.update_attributes(:name => 'john2')
-    DrinkHistory.first.respond_to?(:something).should == false
-    DrinkHistory.first.special.should == 'note'
+    Drink::History.first.respond_to?(:something).should == false
+    Drink::History.first.special.should == 'note'
   end
 
 end
