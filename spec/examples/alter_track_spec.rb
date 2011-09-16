@@ -20,13 +20,13 @@ describe TrackHistory do
   # clean up each time
   before(:each) do
     Thing.destroy_all
-    ThingHistory.destroy_all
+    Thing::History.destroy_all
   end
 
   it 'should work with altered column names' do
     thing = Thing.create(:name => 'john')
     thing.update_attributes(:name => 'john2')
-    history = ThingHistory.first
+    history = Thing::History.first
     history.modifications.should == ['name']
     history.name_from.should == 'john'
     history.name_to.should == 'john2'

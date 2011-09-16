@@ -21,7 +21,7 @@ describe TrackHistory do
   # clean up each time
   before(:each) do
     Beer.destroy_all
-    BeerHistory.destroy_all
+    Beer::History.destroy_all
   end
 
   it 'should not need a reference column in order to record histories' do
@@ -29,7 +29,7 @@ describe TrackHistory do
     user.update_attributes(:name => 'john2')
     user.respond_to?(:histories).should == false
 
-    history = BeerHistory.first
+    history = Beer::History.first
     history.modifications.should == ['name']
     history.name_before.should == 'john'
     history.name_after.should == 'john2'

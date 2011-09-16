@@ -34,8 +34,8 @@ describe TrackHistory do
   before(:each) do
     SlugUser.destroy_all
     SluggedUser.destroy_all
-    SlugUserHistory.destroy_all
-    SluggedUserHistory.destroy_all
+    SlugUser::History.destroy_all
+    SluggedUser::History.destroy_all
   end
   
   # use case for slugs

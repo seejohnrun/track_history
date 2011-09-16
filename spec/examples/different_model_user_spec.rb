@@ -39,7 +39,7 @@ describe TrackHistory do
     user = TableUser.create(:name => 'john')
     user.update_attributes(:name => 'john2')
     user.histories.size.should == 1
-    user.histories.first.should be_a(TableUserHistory) # shouldn't change
+    user.histories.first.should be_a(TableUser::History) # shouldn't change
   end
 
 end

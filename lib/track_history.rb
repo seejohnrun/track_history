@@ -43,8 +43,11 @@ module TrackHistory
     def define_historical_model(base, model_name, table_name, track_reference, &block)
 
       # figure out the model name
-      model_name ||= "#{base.name}History"
-      @klass_reference = Object.const_set(model_name, Class.new(ActiveRecord::Base))
+      model_name ||= "#{base.name}::History"
+      class_path = model_name.split(/::/)
+      inner_name = class_path.pop
+      outer = class_path.inject(Object) { |outer, inner_name| outer.const_get(inner_name) }
+      @klass_reference = outer.const_set(inner_name, Class.new(ActiveRecord::Base))
       @klass_reference.send(:table_name=, table_name) unless table_name.nil?
 
       unless @klass_reference.table_exists?
