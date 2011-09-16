@@ -25,7 +25,7 @@ You will automatically get:
 
 ``` ruby
 user.histories
-user.histories.first.class # UserHistory
+user.histories.first.class # User::History
 
 user.histories.first.modifications # ["email"]
 ```
@@ -67,7 +67,7 @@ track_history :reference => false
 
 ---
 
-## Adding methods to *History
+## Adding methods to *::History
 
 To add methods to your History classes, or create additional relationships that you may need, you can work directly in the `track_history` block:
 
