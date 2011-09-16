@@ -25,23 +25,23 @@ describe TrackHistory do
   # clean up each time
   before(:each) do
     Door.destroy_all
-    DoorHistory.destroy_all
+    Door::History.destroy_all
   end
 
   it 'should be able to define class methods' do
-    DoorHistory.class_note.should == 'class_note'
+    Door::History.class_note.should == 'class_note'
   end
 
   it 'should be able to define instance methods' do
     door = Door.create(:name => 'john')
     door.update_attributes(:name => 'john2')
-    DoorHistory.first.instance_note.should == 'instance_note'
+    Door::History.first.instance_note.should == 'instance_note'
   end
   
   it 'should not have historical_fields as an instance method' do
     door = Door.create(:name => 'john')
     door.update_attributes(:name => 'john2')
-    DoorHistory.first.should_not respond_to(:historical_fields)
+    Door::History.first.should_not respond_to(:historical_fields)
   end
 
 end

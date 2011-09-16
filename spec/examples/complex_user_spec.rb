@@ -26,7 +26,7 @@ describe TrackHistory do
   # clean up each time
   before(:each) do
     ComplexUser.destroy_all
-    ComplexUserHistory.destroy_all
+    ComplexUser::History.destroy_all
   end
 
   it 'should automatically annotate with a note on changes' do
