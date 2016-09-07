@@ -82,11 +82,12 @@ module TrackHistory
       if track_reference
         @klass_reference.belongs_to rel
         @klass_reference.send(:alias_method, :historical_relation, rel)
-
-        has_many :histories,
-          -> { order 'id desc' },
-          :class_name => model_name,
-          dependent: :destroy
+        if track_reference
+          has_many :histories,
+            -> { order 'id desc' },
+            :class_name => model_name,
+            dependent: :destroy
+        end
       end
 
       # tell the other class about us
