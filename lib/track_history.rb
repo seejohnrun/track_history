@@ -54,26 +54,26 @@ module TrackHistory
         $stderr.puts "[TrackHistory] No such table exists: #{@klass_reference.table_name} - #{self.name} history will not be tracked" unless TrackHistory.warnings_disabled?
         return
       end
- 
+
       # get the history class in line
       @klass_reference.send(:extend, TrackHistory::HistoryMethods)
- 
+
       # figure out the field for tracking action (enum)
       @klass_reference.instance_variable_set(:@historical_action_field, @klass_reference.columns_hash.has_key?('action') ? 'action' : nil)
-      @klass_reference.instance_variable_set(:@track_historical_reference, track_reference) 
+      @klass_reference.instance_variable_set(:@track_historical_reference, track_reference)
 
       # allow other things to be specified
       @klass_reference.module_eval(&block) if block_given?
 
       # infer fields
-      @klass_reference.columns_hash.each_key do |k| 
+      @klass_reference.columns_hash.each_key do |k|
         matches = k.match(/(.+?)_before$/)
         if matches && matches.size == 2 && field_name = matches[1]
           next if @klass_reference.historical_fields.has_key?(field_name) || @klass_reference.historical_tracks.has_key?(field_name) # override inferrences
           @klass_reference.historical_fields[field_name] = { :before => "#{field_name}_before".to_sym, :after => "#{field_name}_after".to_sym }
         end
       end
-      
+
       # create the history class
       rel = base.name.singularize.underscore.downcase.to_sym
       @klass_reference.send(:include, TrackHistory::HistoricalRelationHelpers)
@@ -122,7 +122,7 @@ module TrackHistory
         attributes[field_options[:after]] = (action == 'destroy' ? nil : send(field.to_sym)) if field_options[:after] # special tracking on deletions
         attributes[field_options[:before]]  = send(:"#{field}_was") if field_options[:before]
       end
-      return if attributes.empty? && action == 'update' # nothing changed - skip out 
+      return if attributes.empty? && action == 'update' # nothing changed - skip out
       # then go through each track
       historical_tracks.each do |field, block|
         attributes[field] = block.is_a?(Symbol) ? send(block) : (block.arity == 1 ? block.call(self) : instance_eval(&block)) # give access to the user object
