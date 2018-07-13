@@ -1,11 +1,11 @@
 require File.dirname(__FILE__) + '/lib/track_history/version'
 
 spec = Gem::Specification.new do |s|
-  
+
   s.name = 'track_history'
   s.author = 'John Crepezzi'
   s.add_development_dependency('rspec')
-  s.add_development_dependency('mysql')
+  s.add_development_dependency('pg')
   s.description = 'Smart, performant model auditing'
   s.email = 'john.crepezzi@patch.com'
   s.files = Dir['lib/**/*.rb']

@@ -3,7 +3,10 @@ require File.dirname(__FILE__) + '/spec_helper'
 describe TrackHistory do
 
   before(:all) do
-    ActiveRecord::Base.connection.execute("create table anon_users (id integer primary key auto_increment, name varchar(256))")
+    ActiveRecord::Base.connection.create_table :anon_users do |t|
+      t.string :name
+    end
+
     TrackHistory.disable_warnings
     class AnonUser < ActiveRecord::Base
       validates_length_of :name, :minimum => 2
@@ -14,7 +17,7 @@ describe TrackHistory do
   after(:all) do
     ActiveRecord::Base.connection.execute("drop table anon_users")
   end
-  
+
   before(:each) do
     AnonUser.destroy_all
   end

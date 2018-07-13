@@ -3,10 +3,26 @@ require File.dirname(__FILE__) + '/spec_helper'
 describe TrackHistory do
 
   before(:all) do
-    ActiveRecord::Base.connection.execute("create table slug_users (id integer primary key auto_increment, name varchar(256))")
-    ActiveRecord::Base.connection.execute("create table slugged_users (id integer primary key auto_increment, name varchar(256))")
-    ActiveRecord::Base.connection.execute("create table slug_user_histories (id integer primary key auto_increment, slug_user_id integer, old_name varchar(256), created_at datetime)")
-    ActiveRecord::Base.connection.execute("create table slugged_user_histories (id integer primary key auto_increment, slugged_user_id integer, name_before varchar(256), name_after varchar(256), created_at datetime)")
+    ActiveRecord::Base.connection.create_table :slug_users do |t|
+      t.string :name
+    end
+
+    ActiveRecord::Base.connection.create_table :slugged_users do |t|
+      t.string :name
+    end
+
+    ActiveRecord::Base.connection.create_table :slug_user_histories do |t|
+      t.integer :slug_user_id
+      t.string :old_name
+    end
+
+    ActiveRecord::Base.connection.create_table :slugged_user_histories do |t|
+      t.integer :slugged_user_id
+      t.string :note
+      t.string :name_before
+      t.string :name_after
+    end
+
     class SlugUser < ActiveRecord::Base
       track_history do
         field :name, :before => :old_name
@@ -24,10 +40,10 @@ describe TrackHistory do
   end
 
   after(:all) do
-    ActiveRecord::Base.connection.execute("drop table slug_users")
-    ActiveRecord::Base.connection.execute("drop table slugged_users")
-    ActiveRecord::Base.connection.execute("drop table slug_user_histories")
-    ActiveRecord::Base.connection.execute("drop table slugged_user_histories")
+    ActiveRecord::Base.connection.drop_table :slug_users
+    ActiveRecord::Base.connection.drop_table :slugged_users
+    ActiveRecord::Base.connection.drop_table :slug_user_histories
+    ActiveRecord::Base.connection.drop_table :slugged_user_histories
   end
 
   # clean up each time
@@ -37,7 +53,7 @@ describe TrackHistory do
     SlugUser::History.destroy_all
     SluggedUser::History.destroy_all
   end
-  
+
   # use case for slugs
   it 'should be able to save with just one of the before / after fields' do
     user = SlugUser.create(:name => 'john')
@@ -56,4 +72,3 @@ describe TrackHistory do
   end
 
 end
-

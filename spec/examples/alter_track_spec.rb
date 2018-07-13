@@ -3,8 +3,17 @@ require File.dirname(__FILE__) + '/spec_helper'
 describe TrackHistory do
 
   before(:all) do
-    ActiveRecord::Base.connection.execute("create table things (id integer primary key auto_increment, name varchar(256))")
-    ActiveRecord::Base.connection.execute("create table thing_histories (id integer primary key auto_increment, name_from varchar(256), name_to varchar(256), created_at datetime, john varchar(256))")
+    ActiveRecord::Base.connection.create_table :things do |t|
+      t.string :name
+    end
+
+    ActiveRecord::Base.connection.create_table :thing_histories do |t|
+      t.string :name_from
+      t.string :name_to
+      t.timestamp :created_at
+      t.string :john
+    end
+
     class Thing < ActiveRecord::Base
       track_history :reference => false do
         field :name, :before => :name_from, :after => :name_to
@@ -13,8 +22,8 @@ describe TrackHistory do
   end
 
   after(:all) do
-    ActiveRecord::Base.connection.execute("drop table things")
-    ActiveRecord::Base.connection.execute("drop table thing_histories")
+    ActiveRecord::Base.connection.drop_table :things, force: :cascade
+    ActiveRecord::Base.connection.drop_table :thing_histories, force: :cascade
   end
 
   # clean up each time
@@ -25,7 +34,9 @@ describe TrackHistory do
 
   it 'should work with altered column names' do
     thing = Thing.create(:name => 'john')
-    thing.update_attributes(:name => 'john2')
+    thing.name = 'john2'
+    thing.save!
+    # thing.update_attributes(:name => 'john2')
     history = Thing::History.first
     history.modifications.should == ['name']
     history.name_from.should == 'john'

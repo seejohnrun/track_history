@@ -114,14 +114,27 @@ module TrackHistory
     def record_historical_changes(action = 'update')
       historical_fields = self.class.historical_class.historical_fields
       historical_tracks = self.class.historical_class.historical_tracks
+
       return if historical_fields.empty? && historical_tracks.empty?
       # go through each and build the hashes
       attributes = {}
       historical_fields.each do |field, field_options|
-        next if !send(:"#{field}_changed?") && action == 'update'
-        attributes[field_options[:after]] = (action == 'destroy' ? nil : send(field.to_sym)) if field_options[:after] # special tracking on deletions
-        attributes[field_options[:before]]  = send(:"#{field}_was") if field_options[:before]
+
+        old, new = case action
+        when 'update'
+          send("#{field}_change")
+        when 'destroy'
+          [send(field), nil]
+        when 'create'
+          [nil, send(field)]
+        end
+
+        next if old == nil && new == nil
+
+        attributes[field_options[:after]] = new if field_options[:after]
+        attributes[field_options[:before]] = old if field_options[:before]
       end
+
       return if attributes.empty? && action == 'update' # nothing changed - skip out
       # then go through each track
       historical_tracks.each do |field, block|
@@ -131,6 +144,7 @@ module TrackHistory
       if action_field = self.class.historical_class.historical_action_field
         attributes[action_field] = action
       end
+
       # record the change
       if self.class.historical_class.track_historical_reference?
         self.histories.create(attributes)
