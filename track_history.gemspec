@@ -6,10 +6,10 @@ spec = Gem::Specification.new do |s|
   s.author = 'John Crepezzi'
   s.add_development_dependency('rspec')
   s.add_development_dependency('pg')
+  s.add_development_dependency('rails')
   s.description = 'Smart, performant model auditing'
   s.email = 'john.crepezzi@patch.com'
   s.files = Dir['lib/**/*.rb']
-  s.has_rdoc = true
   s.homepage = 'http://github.com/seejohnrun/historical'
   s.platform = Gem::Platform::RUBY
   s.require_paths = ['lib']
