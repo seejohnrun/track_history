@@ -99,6 +99,15 @@ track_history :table_name => 'user_audits'
 
 ---
 
+## Requirements
+
+|Version|Rails <5.1|Rails >=5.1|
+|---|---|---|
+|0.1.0|Yes|Yes (with warnings)|
+|1.0.0|No|Yes|
+
+## Test Setup
+
 ### License
 
 The MIT License (see attached)

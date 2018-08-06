@@ -4,9 +4,9 @@ spec = Gem::Specification.new do |s|
 
   s.name = 'track_history'
   s.author = 'John Crepezzi'
+  s.add_dependency('rails', '>= 5.1')
   s.add_development_dependency('rspec')
   s.add_development_dependency('pg')
-  s.add_development_dependency('rails')
   s.description = 'Smart, performant model auditing'
   s.email = 'john.crepezzi@patch.com'
   s.files = Dir['lib/**/*.rb']
