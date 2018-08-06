@@ -36,7 +36,6 @@ describe TrackHistory do
     thing = Thing.create(:name => 'john')
     thing.name = 'john2'
     thing.save!
-    # thing.update_attributes(:name => 'john2')
     history = Thing::History.first
     history.modifications.should == ['name']
     history.name_from.should == 'john'
