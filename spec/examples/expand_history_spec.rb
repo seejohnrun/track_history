@@ -3,8 +3,16 @@ require File.dirname(__FILE__) + '/spec_helper'
 describe TrackHistory do
 
   before(:all) do
-    ActiveRecord::Base.connection.execute("create table doors (id integer primary key auto_increment, name varchar(256))")
-    ActiveRecord::Base.connection.execute("create table door_histories (id integer primary key auto_increment, door_id integer, name_before varchar(256), name_after varchar(256), created_at datetime)")
+    ActiveRecord::Base.connection.create_table :doors do |t|
+      t.string :name
+    end
+
+    ActiveRecord::Base.connection.create_table :door_histories do |t|
+      t.integer :door_id
+      t.string :name_before
+      t.string :name_after
+    end
+
     class Door < ActiveRecord::Base
       track_history do
         def self.class_note
@@ -18,8 +26,8 @@ describe TrackHistory do
   end
 
   after(:all) do
-    ActiveRecord::Base.connection.execute("drop table doors")
-    ActiveRecord::Base.connection.execute("drop table door_histories")
+    ActiveRecord::Base.connection.drop_table :doors
+    ActiveRecord::Base.connection.drop_table :door_histories
   end
 
   # clean up each time
@@ -37,7 +45,7 @@ describe TrackHistory do
     door.update_attributes(:name => 'john2')
     Door::History.first.instance_note.should == 'instance_note'
   end
-  
+
   it 'should not have historical_fields as an instance method' do
     door = Door.create(:name => 'john')
     door.update_attributes(:name => 'john2')
@@ -45,4 +53,3 @@ describe TrackHistory do
   end
 
 end
-

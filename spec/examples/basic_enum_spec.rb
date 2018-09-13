@@ -3,16 +3,25 @@ require File.dirname(__FILE__) + '/spec_helper'
 describe TrackHistory do
 
   before(:all) do
-    ActiveRecord::Base.connection.execute("create table basic_users (id integer primary key auto_increment, name varchar(256))")
-    ActiveRecord::Base.connection.execute("create table basic_user_histories (id integer primary key auto_increment, basic_user_id integer, name_before varchar(256), name_after varchar(256), action enum ('create', 'destroy', 'update'), created_at datetime)")
+    ActiveRecord::Base.connection.create_table :basic_users do |t|
+      t.string :name
+    end
+
+    ActiveRecord::Base.connection.create_table :basic_user_histories do |t|
+      t.integer :basic_user_id
+      t.string :name_before
+      t.string :name_after
+      t.string :action
+    end
+
     class BasicUser < ActiveRecord::Base
       track_history
     end
   end
 
   after(:all) do
-    ActiveRecord::Base.connection.execute("drop table basic_users")
-    ActiveRecord::Base.connection.execute("drop table basic_user_histories")
+    ActiveRecord::Base.connection.drop_table :basic_users
+    ActiveRecord::Base.connection.drop_table :basic_user_histories
   end
 
   # clean up each time
@@ -43,7 +52,7 @@ describe TrackHistory do
     user = BasicUser.create(:name => 'john')
     user.destroy
 
-    history = user.histories.find(:first, :order => 'id desc')
+    history = user.histories.order(:id => 'desc').first
     history.basic_user_id.should == user.id # make sure the reference is maintained
     history.action.should == 'destroy'
     history.name_before.should == 'john'

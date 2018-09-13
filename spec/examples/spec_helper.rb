@@ -3,4 +3,4 @@ require 'rubygems'
 require 'track_history'
 require 'active_record'
 
-ActiveRecord::Base.establish_connection(:adapter => 'mysql', :database => 'track_history')
+ActiveRecord::Base.establish_connection(:adapter => 'postgresql', :database => 'track_history')

@@ -3,8 +3,16 @@ require File.dirname(__FILE__) + '/spec_helper'
 describe TrackHistory do
 
   before(:all) do
-    ActiveRecord::Base.connection.execute("create table users (id integer primary key auto_increment, name varchar(256))")
-    ActiveRecord::Base.connection.execute("create table user_histories (id integer primary key auto_increment, user_id integer, name_before varchar(256), name_after varchar(256), created_at datetime)")
+    ActiveRecord::Base.connection.create_table :users do |t|
+      t.string :name
+    end
+
+    ActiveRecord::Base.connection.create_table :user_histories do |t|
+      t.integer :user_id
+      t.string :name_before
+      t.string :name_after
+    end
+
     class User < ActiveRecord::Base
       validates_length_of :name, :minimum => 2
       track_history
@@ -83,7 +91,7 @@ describe TrackHistory do
   it 'should be able to work with two user records at the same time and not get confused' do
     user1 = User.create(:name => 'john')
     user2 = User.create(:name => 'kate')
-    
+
     user1.update_attributes(:name => 'john2')
     user2.update_attributes(:name => 'kate2')
 
@@ -95,7 +103,7 @@ describe TrackHistory do
     user2.histories.first.name_before.should == 'kate'
     user2.histories.first.name_after.should == 'kate2'
   end
-  
+
   it 'should work with dependent => destroy appropriately' do
     user = User.create(:name => 'john')
     user_id = user.id

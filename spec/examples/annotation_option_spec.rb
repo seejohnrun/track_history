@@ -3,8 +3,17 @@ require File.dirname(__FILE__) + '/spec_helper'
 describe TrackHistory do
 
   before(:all) do
-    ActiveRecord::Base.connection.execute("create table drinks (id integer primary key auto_increment, name varchar(255))")
-    ActiveRecord::Base.connection.execute("create table drink_histories (id integer primary key auto_increment, special varchar(255), name_before varchar(255), name_after varchar(255), created_at datetime)")
+    ActiveRecord::Base.connection.create_table :drinks do |t|
+      t.string :name
+    end
+
+    ActiveRecord::Base.connection.create_table :drink_histories do |t|
+      t.integer :drink_id
+      t.string :name_before
+      t.string :name_after
+      t.string :special
+    end
+
     class Drink < ActiveRecord::Base
       track_history :reference => false do
         annotate :something, :as => :special
@@ -16,8 +25,8 @@ describe TrackHistory do
   end
 
   after(:all) do
-    ActiveRecord::Base.connection.execute("drop table drinks")
-    ActiveRecord::Base.connection.execute("drop table drink_histories")
+    ActiveRecord::Base.connection.drop_table :drinks
+    ActiveRecord::Base.connection.drop_table :drink_histories
   end
 
   # clean up each time

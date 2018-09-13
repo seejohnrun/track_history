@@ -3,10 +3,26 @@ require File.dirname(__FILE__) + '/spec_helper'
 describe TrackHistory do
 
   before(:all) do
-    ActiveRecord::Base.connection.execute("create table model_users (id integer primary key auto_increment, name varchar(256))")
-    ActiveRecord::Base.connection.execute("create table table_users (id integer primary key auto_increment, name varchar(256))")
-    ActiveRecord::Base.connection.execute("create table model_user_audits (id integer primary key auto_increment, model_user_id integer, name_before varchar(256), name_after varchar(256), created_at datetime)")
-    ActiveRecord::Base.connection.execute("create table table_user_audits (id integer primary key auto_increment, table_user_id integer, name_before varchar(256), name_after varchar(256), created_at datetime)")
+    ActiveRecord::Base.connection.create_table :model_users do |t|
+      t.string :name
+    end
+
+    ActiveRecord::Base.connection.create_table :model_user_audits do |t|
+      t.integer :model_user_id
+      t.string :name_before
+      t.string :name_after
+    end
+
+    ActiveRecord::Base.connection.create_table :table_users do |t|
+      t.string :name
+    end
+
+    ActiveRecord::Base.connection.create_table :table_user_audits do |t|
+      t.integer :table_user_id
+      t.string :name_before
+      t.string :name_after
+    end
+
     class ModelUser < ActiveRecord::Base
       track_history :model_name => 'ModelUserAudit'
     end
@@ -16,10 +32,10 @@ describe TrackHistory do
   end
 
   after(:all) do
-    ActiveRecord::Base.connection.execute("drop table table_users")
-    ActiveRecord::Base.connection.execute("drop table model_users")
-    ActiveRecord::Base.connection.execute("drop table table_user_audits")
-    ActiveRecord::Base.connection.execute("drop table model_user_audits")
+    ActiveRecord::Base.connection.drop_table :table_users
+    ActiveRecord::Base.connection.drop_table :model_users
+    ActiveRecord::Base.connection.drop_table :table_user_audits
+    ActiveRecord::Base.connection.drop_table :model_user_audits
   end
 
   # clean up each time
@@ -43,4 +59,3 @@ describe TrackHistory do
   end
 
 end
-
