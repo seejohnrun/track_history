@@ -37,11 +37,11 @@ describe TrackHistory do
     thing.name = 'john2'
     thing.save!
     history = Thing::History.first
-    history.modifications.should == ['name']
-    history.name_from.should == 'john'
-    history.name_to.should == 'john2'
-    history.respond_to?(:name_before).should == false
-    history.respond_to?(:name_after).should == false
+    expect(history.modifications).to eq ['name']
+    expect(history.name_from).to eq 'john'
+    expect(history.name_to).to eq 'john2'
+    expect(history).not_to respond_to(:name_before)
+    expect(history).not_to respond_to(:name_after)
   end
 
 end

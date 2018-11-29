@@ -37,15 +37,15 @@ describe TrackHistory do
     user = Beer.create(:name => 'john')
     user.name = 'john2'
     user.save!
-    user.respond_to?(:histories).should == false
+    expect(user.respond_to?(:histories)).to eq false
 
     history = Beer::History.first
-    history.modifications.should == ['name']
-    history.name_before.should == 'john'
-    history.name_after.should == 'john2'
-    history.john.should == 'hi'
-    history.respond_to?(:user).should == false
-    history.respond_to?(:historical_relation).should == false
+    expect(history.modifications).to eq ['name']
+    expect(history.name_before).to eq 'john'
+    expect(history.name_after).to eq 'john2'
+    expect(history.john).to eq 'hi'
+    expect(history).not_to respond_to(:user)
+    expect(history).not_to respond_to(:historical_relation)
   end
 
 end

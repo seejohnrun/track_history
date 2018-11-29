@@ -59,16 +59,16 @@ describe TrackHistory do
     user = SlugUser.create(:name => 'john')
     user.update_attributes(:name => 'john2')
     history = user.histories.first
-    history.old_name.should == 'john'
-    history.should_not respond_to(:name_after)
+    expect(history.old_name).to eq 'john'
+    expect(history).not_to respond_to(:name_after)
   end
 
   it 'should be able to save with a hand-made before field named _before and no after field' do
     user = SluggedUser.create(:name => 'john')
     user.update_attributes(:name => 'john2')
     history = user.histories.first
-    history.name_before.should == 'john'
-    history.name_after.should == 'note'
+    expect(history.name_before).to eq 'john'
+    expect(history.name_after).to eq 'note'
   end
 
 end

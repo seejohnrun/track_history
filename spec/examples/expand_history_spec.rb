@@ -37,19 +37,19 @@ describe TrackHistory do
   end
 
   it 'should be able to define class methods' do
-    Door::History.class_note.should == 'class_note'
+    expect(Door::History.class_note).to eq 'class_note'
   end
 
   it 'should be able to define instance methods' do
     door = Door.create(:name => 'john')
     door.update_attributes(:name => 'john2')
-    Door::History.first.instance_note.should == 'instance_note'
+    expect(Door::History.first.instance_note).to eq 'instance_note'
   end
 
   it 'should not have historical_fields as an instance method' do
     door = Door.create(:name => 'john')
     door.update_attributes(:name => 'john2')
-    Door::History.first.should_not respond_to(:historical_fields)
+    expect(Door::History.first).not_to respond_to(:historical_fields)
   end
 
 end

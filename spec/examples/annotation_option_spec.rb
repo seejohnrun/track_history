@@ -38,8 +38,8 @@ describe TrackHistory do
   it 'should be able to alias a field' do
     drink = Drink.create(:name => 'john')
     drink.update_attributes(:name => 'john2')
-    Drink::History.first.respond_to?(:something).should == false
-    Drink::History.first.special.should == 'note'
+    expect(Drink::History.first).not_to respond_to(:something)
+    expect(Drink::History.first.special).to eq 'note'
   end
 
 end

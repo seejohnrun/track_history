@@ -23,7 +23,7 @@ describe TrackHistory do
   end
 
   it 'should not error out when there is no table for a history model' do
-    AnonUser.should_not respond_to(:historical_fields)
+    expect(AnonUser).not_to respond_to(:historical_fields)
   end
 
 end

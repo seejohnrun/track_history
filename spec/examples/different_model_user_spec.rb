@@ -47,15 +47,15 @@ describe TrackHistory do
   it 'should work still with a modified model name' do
     user = ModelUser.create(:name => 'john')
     user.update_attributes(:name => 'john2')
-    user.histories.size.should == 1
-    user.histories.first.should be_a(ModelUserAudit)
+    expect(user.histories.size).to eq 1
+    expect(user.histories.first).to be_a(ModelUserAudit)
   end
 
   it 'should work still with a modified table name' do
     user = TableUser.create(:name => 'john')
     user.update_attributes(:name => 'john2')
-    user.histories.size.should == 1
-    user.histories.first.should be_a(TableUser::History) # shouldn't change
+    expect(user.histories.size).to eq 1
+    expect(user.histories.first).to be_a(TableUser::History) # shouldn't change
   end
 
 end
