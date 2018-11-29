@@ -50,8 +50,13 @@ module TrackHistory
       @klass_reference = outer.const_set(inner_name, Class.new(ActiveRecord::Base))
       @klass_reference.send(:table_name=, table_name) unless table_name.nil?
 
-      unless @klass_reference.table_exists?
-        $stderr.puts "[TrackHistory] No such table exists: #{@klass_reference.table_name} - #{self.name} history will not be tracked" unless TrackHistory.warnings_disabled?
+      begin
+        unless @klass_reference.table_exists?
+          $stderr.puts "[TrackHistory] No such table exists: #{@klass_reference.table_name} - #{self.name} history will not be tracked" unless TrackHistory.warnings_disabled?
+          return
+        end
+      rescue ActiveRecord::NoDatabaseError
+        $stderr.puts "[TrackHistory] Database does not exist (could be during db:create or db:setup), history will not be tracked" unless TrackHistory.warnings_disabled?
         return
       end
 
