@@ -6,7 +6,7 @@ describe TrackHistory do
     ActiveRecord::Base.establish_connection(:adapter => 'postgresql', :database => '')
 
     TrackHistory.disable_warnings
-    class AnonUser < ActiveRecord::Base
+    class AnonAdmin < ActiveRecord::Base
       validates_length_of :name, :minimum => 2
       track_history
     end
@@ -18,7 +18,7 @@ describe TrackHistory do
 
 
   it 'should not error out when there is no table for a history model' do
-    AnonUser.should_not respond_to(:historical_fields)
+    AnonAdmin.should_not respond_to(:historical_fields)
   end
 
 end
