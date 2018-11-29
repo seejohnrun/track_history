@@ -33,7 +33,7 @@ describe TrackHistory do
   it 'should be able to get the user from :user' do
     user = User.create(:name => 'john')
     user.update_attributes(:name => 'john2')
-    user.histories.first.user == user
+    expect(user.histories.first.user).to eq user
   end
 
   it 'should get the same object when asking for :user or :historical_relation' do
@@ -41,8 +41,8 @@ describe TrackHistory do
     user.update_attributes(:name => 'john2')
     history = user.histories.first
     # check
-    history.user.should_not == nil
-    history.historical_relation.object_id.should == history.user.object_id
+    expect(history.user).not_to eq nil
+    expect(history.historical_relation.object_id).to eq history.user.object_id
   end
 
   it 'should be able to track changes on a simple user model with one field' do
@@ -52,40 +52,40 @@ describe TrackHistory do
     user.name = 'john2'
     user.save
     # check
-    user.histories.first.name_before.should == 'john'
-    user.histories.first.name_after.should == 'john2'
+    expect(user.histories.first.name_before).to eq 'john'
+    expect(user.histories.first.name_after).to eq 'john2'
   end
 
   it 'should be able to accurately list modifications - 1 column' do
     user = User.create(:name => 'john')
     user.update_attributes(:name => 'john2')
-    user.histories.first.modifications.should == ['name']
+    expect(user.histories.first.modifications).to eq ['name']
   end
 
   it 'should not create histories when creating a new object' do
     user = User.create(:name => 'john')
-    user.respond_to?(:historical_fields).should == false
-    user.histories.size.should == 0
+    expect(user.respond_to?(:historical_fields)).to eq false
+    expect(user.histories.size).to eq 0
   end
 
   it 'should not create histories when nothing has changes' do
     user = User.create(:name => 'john')
     user.touch
-    user.histories.size.should == 0
+    expect(user.histories.size).to eq 0
   end
 
   it 'should not create histories when something changed to the same value' do
     user = User.create(:name => 'john')
     user.name = 'john'
     user.save
-    user.histories.size.should == 0
+    expect(user.histories.size).to eq 0
   end
 
   it 'should not update when validations fail' do
     user = User.create(:name => 'john')
     user.name = 'j'
     user.save
-    user.histories.size.should == 0
+    expect(user.histories.size).to eq 0
   end
 
   it 'should be able to work with two user records at the same time and not get confused' do
@@ -95,24 +95,24 @@ describe TrackHistory do
     user1.update_attributes(:name => 'john2')
     user2.update_attributes(:name => 'kate2')
 
-    user1.histories.size.should == 1
-    user1.histories.first.name_before.should == 'john'
-    user1.histories.first.name_after.should == 'john2'
+    expect(user1.histories.size).to eq 1
+    expect(user1.histories.first.name_before).to eq 'john'
+    expect(user1.histories.first.name_after).to eq 'john2'
 
-    user2.histories.size.should == 1
-    user2.histories.first.name_before.should == 'kate'
-    user2.histories.first.name_after.should == 'kate2'
+    expect(user2.histories.size).to eq 1
+    expect(user2.histories.first.name_before).to eq 'kate'
+    expect(user2.histories.first.name_after).to eq 'kate2'
   end
 
   it 'should work with dependent => destroy appropriately' do
     user = User.create(:name => 'john')
     user_id = user.id
     user.update_attributes(:name => 'john2')
-    user.histories.size.should == 1
+    expect(user.histories.size).to eq 1
 
     User.destroy_all
-    User::History.count.should == 1
-    User::History.first.user_id.should == user_id
+    expect(User::History.count).to eq 1
+    expect(User::History.first.user_id).to eq user_id
   end
 
 end
